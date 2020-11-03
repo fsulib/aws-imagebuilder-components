@@ -1,0 +1,85 @@
+name: 'Install AWS Tools'
+description: 'This component installs the awscli, the CloudWatch agent, and the CloudFormation helper scripts.'
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallSupportPackages
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              sudo apt-get install -y \
+                python \
+                unzip \
+                binutils
+      - name: DownloadTools
+        action: WebDownload
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          - source: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+            destination: /tmp/awscli.zip
+          - source: https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+            destination: /tmp/awscwagent.deb
+          - source: https://bootstrap.pypa.io/get-pip.py
+            destination: /tmp/get-pip.py
+          - source: https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+            destination: /tmp/awscfn.tar.gz
+      - name: CloneEfsUtilsRepo
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - git clone https://github.com/aws/efs-utils.git
+      - name: InstallAwsCli
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              unzip -qq {{ build.DownloadTools.inputs[0].destination }} -d /tmp
+              sudo /tmp/aws/install
+      - name: InstallAwsCwAgent
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              sudo dpkg -i -E {{ build.DownloadTools.inputs[1].destination }}
+      - name: ModCwAgentGroups
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo usermod -a -G adm cwagent
+      - name: InstallPip2
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo python {{ build.DownloadTools.inputs[2].destination }}
+      - name: InstallAwsCfn
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo easy_install --script-dir /opt/aws/bin {{ build.DownloadTools.inputs[3].destination }} 
+      - name: BuildInstallEfsUtilsDebPkg
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - cd efs-utils
+            - ./build-deb.sh
+            - sudo apt-get -y install ./build/amazon-efs-utils*deb
+

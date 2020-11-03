@@ -1,0 +1,55 @@
+name: 'Install Docker'
+description: 'This component installs docker-ce and its dependencies.'
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallSupportPackages
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              sudo apt-get install -y \
+                apt-transport-https \
+                ca-certificates \
+                curl \
+                gnupg-agent \
+                software-properties-common
+      - name: DownloadDockerRepoKey
+        action: WebDownload
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          - source: https://download.docker.com/linux/ubuntu/gpg
+            destination: /tmp/key.gpg
+      - name: InstallDockerRepoKey
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo apt-key add {{ build.DownloadDockerRepoKey.inputs[0].destination }}
+      - name: AddDockerRepo
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo apt-add-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      - name: InstallDocker
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands: 
+            - sudo apt-get update
+            - sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+      - name: ModUbuntuGroups
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo usermod -a -G docker ubuntu
