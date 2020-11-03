@@ -1,5 +1,5 @@
 name: 'Install AWS Tools'
-description: 'This component installs the awscli, the CloudWatch agent, and the CloudFormation helper scripts.'
+description: 'This component installs the awscli, the CloudWatch agent, EFS tools, and the CloudFormation helper scripts.'
 schemaVersion: 1.0
 phases:
   - name: build
