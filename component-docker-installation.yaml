@@ -46,6 +46,13 @@ phases:
           commands: 
             - sudo apt-get update
             - sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+      - name: InstallMysqlClient
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo apt-get install -y mysql-client
       - name: ModUbuntuGroups
         action: ExecuteBash
         onFailure: Abort
