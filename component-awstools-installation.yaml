@@ -25,7 +25,7 @@ phases:
             destination: /tmp/awscli.zip
           - source: https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
             destination: /tmp/awscwagent.deb
-          - source: https://bootstrap.pypa.io/get-pip.py
+          - source: https://bootstrap.pypa.io/2.7/get-pip.py
             destination: /tmp/get-pip.py
           - source: https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
             destination: /tmp/awscfn.tar.gz
