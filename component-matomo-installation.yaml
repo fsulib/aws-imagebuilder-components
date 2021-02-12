@@ -1,0 +1,44 @@
+name: 'Install AWS Tools'
+description: "This component installs Matomo's dependencies and Matomo itself."
+schemaVersion: 1.0
+constants:
+  - DownloadUrl:
+      type: string
+      value: https://builds.matomo.org/matomo-3.14.1.tar.gz
+phases:
+  - name: build
+    steps:
+      - name: InstallMatomoDependencies
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              sudo apt-get install -y \
+                nginx \
+                mysql-client \
+                php7.2 \
+                php7.2-fpm \
+                php7.2-gd \
+                php7.2-curl \
+                php7.2-mysql \
+                php7.2-xml \
+                php7.2-mbstring \
+                unzip \
+                zip
+      - name: DownloadMatomo
+        action: WebDownload
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          - source: {{ DownloadUrl }}
+            destination: /tmp/matomo.tar.gz
+      - name: ExpandMatomoArchive
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - cd /tmp
+            - tar xzf matomo.tar.gz -C /var/www/html
