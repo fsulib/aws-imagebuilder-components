@@ -14,7 +14,8 @@ phases:
               sudo apt-get install -y \
                 python \
                 unzip \
-                binutils
+                binutils \
+                jq
       - name: DownloadTools
         action: WebDownload
         onFailure: Abort
