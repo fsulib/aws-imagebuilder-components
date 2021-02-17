@@ -4,7 +4,7 @@ schemaVersion: 1.0
 constants:
   - S3Source:
       type: string
-      value: s3://ec2.lib.fsu.edu/stats/matomo-3.14.1.tar.gz
+      value: s3://ec2.lib.fsu.edu/stats/matomo-4.1.1.tar.gz
 phases:
   - name: build
     steps:
