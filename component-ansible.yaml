@@ -1,0 +1,15 @@
+name: 'Install Ansible'
+description: "This component installs Ansible and related tools"
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallAnsible
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              pip install ansible
+              ansible-galaxy collection install amazon.aws
