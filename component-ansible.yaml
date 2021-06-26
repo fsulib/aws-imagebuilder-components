@@ -11,5 +11,5 @@ phases:
         inputs:
           commands:
             - |
-              pip install ansible
+              pip install ansible boto3
               ansible-galaxy collection install amazon.aws
