@@ -11,7 +11,7 @@ phases:
         inputs:
           commands:
             - |
-              sudo apt-get install -y \
+              DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 apache2 \
                 libapache2-mod-auth-cas \
                 libgd3 \
