@@ -13,7 +13,6 @@ phases:
             - |
               DEBIAN_FRONTEND=noninteractive apt-get install -y \
                 apache2 \
-                libapache2-mod-auth-cas \
                 libgd3 \
                 mysql-client \
                 unzip \
