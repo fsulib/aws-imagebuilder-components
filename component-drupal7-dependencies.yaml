@@ -30,6 +30,7 @@ phases:
                 php7.4-zip \
                 php7.4-mysql \
                 php-date \
+                php-cas \
                 php7.4-mbstring \
                 zip \
                 postfix \
