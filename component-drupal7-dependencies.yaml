@@ -35,4 +35,18 @@ phases:
                 zip \
                 postfix \
                 ca-certificates
+      - name: DownloadDrush
+        action: WebDownload
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          - source: https://github.com/drush-ops/drush/releases/download/8.4.8/drush.phar
+            destination: /usr/local/bin/drush
+      - name: ChmodDrush
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - chmod +x /usr/local/bin/drush
 
