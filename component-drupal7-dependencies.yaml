@@ -34,6 +34,7 @@ phases:
                 php7.4-mbstring \
                 zip \
                 postfix \
+                ghostscript \
                 ca-certificates
       - name: DownloadDrush
         action: WebDownload
