@@ -1,0 +1,49 @@
+name: 'Install Drupal9 Dependencies'
+description: "This component installs Drupal9's dependencies, including Composter."
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallDrupal9Dependencies
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              sudo apt-get install -y \
+                apache2 \
+                libgd3 \
+                mysql-client \
+                unzip \
+                php \
+                php-cli \
+                php-common \
+                php-curl \
+                php-dev \
+                php-fpm \
+                php-gd \
+                php-json \
+                php-soap \
+                php-xml \
+                php-zip \
+                php-mysql \
+                php-date \
+                php-mbstring \
+                zip
+      - name: InstallComposter
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              cd /root
+              php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+              HOME=/root php composer-setup.php --version=2.1.11 --filename=composer --install-dir=/usr/local/bin
+              php -r "unlink('composer-setup.php');"
+              chmod +x /usr/local/bin/composer
+              HOME=/root /usr/local/bin/composer --no-interaction global require zaporylie/composer-drupal-optimizations
+              mkdir -p /root/.config/composer
+              wget -O /root/.config/composer/auth.json https://www.dropbox.com/s/ykrrlf7ysuc6iih/auth2.json > /dev/null
+              
