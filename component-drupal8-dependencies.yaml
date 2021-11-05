@@ -1,0 +1,47 @@
+name: 'Install Drupal8 Dependencies'
+description: "This component installs Drupal8's dependencies, including Composter."
+schemaVersion: 1.0
+phases:
+  - name: build
+    steps:
+      - name: InstallDrupal8Dependencies
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              sudo apt-get install -y \
+                apache2 \
+                libgd3 \
+                mysql-client \
+                unzip \
+                php \
+                php-cli \
+                php-common \
+                php-curl \
+                php-dev \
+                php-fpm \
+                php-gd \
+                php-json \
+                php-soap \
+                php-xml \
+                php-zip \
+                php-mysql \
+                php-date \
+                php-mbstring \
+                zip
+      - name: InstallComposter
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              cd /root
+              php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+              HOME=/root php composer-setup.php --version=1.10.10 --filename=composer --install-dir=/usr/local/bin
+              php -r "unlink('composer-setup.php');"
+              chmod +x /usr/local/bin/composer
+              /usr/local/bin/composer global require zaporylie/composer-drupal-optimizations
+              mkdir /root/.composer
