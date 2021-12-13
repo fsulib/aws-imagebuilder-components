@@ -30,6 +30,7 @@ phases:
                 php-mysql \
                 php-date \
                 php-mbstring \
+                php-intl \
                 zip
       - name: InstallComposter
         action: ExecuteBash
