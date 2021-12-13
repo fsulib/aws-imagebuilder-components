@@ -13,6 +13,7 @@ phases:
             - |
               sudo apt-get install -y \
                 python \
+                python3 \
                 unzip \
                 binutils \
                 jq \
@@ -26,9 +27,7 @@ phases:
             destination: /tmp/awscli.zip
           - source: https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
             destination: /tmp/awscwagent.deb
-          - source: https://bootstrap.pypa.io/pip/2.7/get-pip.py
-            destination: /tmp/get-pip.py
-          - source: https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+          - source: https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
             destination: /tmp/awscfn.tar.gz
       - name: CloneEfsUtilsRepo
         action: ExecuteBash
@@ -61,20 +60,13 @@ phases:
         inputs:
           commands:
             - sudo usermod -a -G adm cwagent
-      - name: InstallPip2
-        action: ExecuteBash
-        onFailure: Abort
-        maxAttempts: 3
-        inputs:
-          commands:
-            - sudo python {{ build.DownloadTools.inputs[2].destination }}
       - name: InstallAwsCfn
         action: ExecuteBash
         onFailure: Abort
         maxAttempts: 3
         inputs:
           commands:
-            - sudo easy_install --script-dir /opt/aws/bin {{ build.DownloadTools.inputs[3].destination }} 
+            - sudo python3 -m easy_install --script-dir /opt/aws/bin {{ build.DownloadTools.inputs[2].destination }} 
       - name: BuildInstallEfsUtilsDebPkg
         action: ExecuteBash
         onFailure: Abort
