@@ -30,6 +30,8 @@ phases:
             destination: /tmp/awscwagent.deb
           - source: https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
             destination: /tmp/awscfn.tar.gz
+          - source: https://bootstrap.pypa.io/get-pip.py
+            destination: /tmp/get-pip.py
       - name: CloneEfsUtilsRepo
         action: ExecuteBash
         onFailure: Abort
@@ -77,4 +79,11 @@ phases:
             - cd efs-utils
             - ./build-deb.sh
             - sudo apt-get -y install ./build/amazon-efs-utils*deb
+      - name: InstallPip3
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo python3 {{ build.DownloadTools.inputs[3].destination }}
 
