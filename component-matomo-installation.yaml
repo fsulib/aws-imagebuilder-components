@@ -2,9 +2,9 @@ name: 'Install AWS Tools'
 description: "This component installs Matomo's dependencies and Matomo itself."
 schemaVersion: 1.0
 constants:
-  - S3Source:
+  - MatomoSource:
       type: string
-      value: s3://ec2.lib.fsu.edu/stats/matomo-4.1.1.tar.gz
+      value: https://builds.matomo.org/matomo-4.1.1.tar.gz
 phases:
   - name: build
     steps:
@@ -28,11 +28,11 @@ phases:
                 unzip \
                 zip
       - name: DownloadMatomo
-        action: S3Download
+        action: WebDownload
         onFailure: Abort
         maxAttempts: 3
         inputs:
-          - source: '{{ S3Source }}'
+          - source: '{{ MatomoSource }}'
             destination: /tmp/matomo.tar.gz
       - name: ExpandMatomoArchive
         action: ExecuteBash
