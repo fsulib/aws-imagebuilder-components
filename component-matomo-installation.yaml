@@ -4,12 +4,8 @@ schemaVersion: 1.0
 parameters:
   - MatomoUrl:
       type: string
-      default: 'https://builds.matomo.org'
+      default: 'https://builds.matomo.org/matomo-4.1.1.zip'
       description: 'Source of Matomo application archive.'
-  - MatomoVersion:
-      type: string
-      default: '4.1.1'
-      description: 'Matomo version currently deployed.'
   - MatomoChecksum:
       type: string
       default: 'ef9642d4ae91176ddb577f02e0b6488f565f1b8591d88f1c24ae16e230bdaa93'
@@ -46,7 +42,7 @@ phases:
         onFailure: Abort
         maxAttempts: 3
         inputs:
-          - source: '{{ MatomoUrl }}/matomo-{{ MatomoVersion }}.zip'
+          - source: '{{ MatomoUrl }}'
             checksum: '{{ MatomoChecksum }}'
             algorithm: SHA256
             destination: '{{ MatomoArchive }}'
@@ -56,4 +52,4 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-            - unzip -qq {{ build.DownloadMatomo.inputs[0].destination }} -d /var/www/html
+            - unzip -qq {{ build.DownloadMatomoArchive.inputs[0].destination }} -d /var/www/html
