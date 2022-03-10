@@ -1,10 +1,24 @@
-name: 'Install AWS Tools'
+name: 'Download and expand Matomo'
 description: "This component installs Matomo's dependencies and Matomo itself."
 schemaVersion: 1.0
-constants:
-  - MatomoSource:
+parameters:
+  - MatomoUrl:
       type: string
-      value: https://builds.matomo.org/matomo-4.1.1.tar.gz
+      default: 'https://builds.matomo.org'
+      description: 'Source of Matomo application archive.'
+  - MatomoVersion:
+      type: string
+      default: '4.1.1'
+      description: 'Matomo version currently deployed.'
+  - MatomoChecksum:
+      type: string
+      default: 'ef9642d4ae91176ddb577f02e0b6488f565f1b8591d88f1c24ae16e230bdaa93'
+      description: 'Matomo archive SHA256 checksum.'
+  - MatomoArchive:
+      type: string
+      default: 'matomo.zip'
+      description: 'Archive download filename.'
+
 phases:
   - name: build
     steps:
@@ -27,18 +41,19 @@ phases:
                 php7.4-mbstring \
                 unzip \
                 zip
-      - name: DownloadMatomo
+      - name: DownloadMatomoArchive
         action: WebDownload
         onFailure: Abort
         maxAttempts: 3
         inputs:
-          - source: '{{ MatomoSource }}'
-            destination: /tmp/matomo.tar.gz
+          - source: '{{ MatomoUrl }}/matomo-{{ MatomoVersion }}.zip'
+            checksum: '{{ MatomoChecksum }}'
+            algorithm: SHA256
+            destination: '{{ MatomoArchive }}'
       - name: ExpandMatomoArchive
         action: ExecuteBash
         onFailure: Abort
-        maxAttempts: 3
+        maxAttempts: 1
         inputs:
           commands:
-            - cd /tmp
-            - tar xzf matomo.tar.gz -C /var/www/html
+            - unzip -qq {{ build.DownloadMatomo.inputs[0].destination }} -d /var/www/html
