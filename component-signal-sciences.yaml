@@ -63,6 +63,7 @@ phases:
             owner: root
             group: root
             permissions: '0755'
+            overwrite: false
       - name: ConfigureKey
         action: ExecuteBash
         onFailure: Abort
