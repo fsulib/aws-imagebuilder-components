@@ -1,0 +1,125 @@
+name: 'Install Docker'
+description: 'This component installs docker-ce and its dependencies.'
+schemaVersion: 1.0
+parameters:
+  - KeyUrl:
+      type: string
+      default: 'https://download.docker.com/linux/ubuntu/gpg'
+      description: 'GPG key url.'
+  - KeyFile:
+      type: string
+      default: 'docker_key.pub.gpg'
+      description: 'Key download file name.'
+  - KeyChecksum:
+      type: string
+      default: '1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570'
+      description: 'Downloaded key SHA256 checksum.'
+  - KeyRing:
+      type: string
+      default: '/usr/local/share/keyrings'
+      description: 'Local keyring.'
+  - RepoUrl:
+      type: string
+      default: 'https://download.docker.com/linux/ubuntu'
+      description: 'Repository url.'
+  - RepoName:
+      type: string
+      default: 'focal'
+      description: 'Respository name.'
+  - RepoBranch:
+      type: string
+      default: 'stable'
+      description: 'Repository branch.'
+  - SourcesListName:
+      type: string
+      default: 'docker.list'
+      description: 'Sources list file name.'
+  - PackageList:
+      type: string
+      default: 'docker-ce docker-ce-cli containerd.io docker-compose-plugin'
+      description: 'Packages. Passed to apt-get install. Space separated list.'
+
+phases:
+  - name: build
+    steps:
+      - name: InstallSupportPackages
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - |
+              sudo apt-get install -y \
+                apt-transport-https \
+                ca-certificates \
+                curl \
+                gnupg-agent \
+                software-properties-common
+      - name: DownloadKey
+        action: WebDownload
+        onFailure: Abort
+        maxAttempts: 3
+        timeoutSeconds: 10
+        inputs:
+          - source: '{{ KeyUrl }}'
+            checksum: '{{ KeyChecksum }}'
+            algorithm: SHA256
+            destination: '{{ KeyFile }}'
+      - name: CreateKeyingDirectory
+        action: CreateFolder
+        inputs:
+          - path: '{{ KeyRing }}'
+            owner: root
+            group: root
+            permissions: '0755'
+            overwrite: false
+      - name: ConfigureKey
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 1
+        inputs:
+          commands:
+            - |
+              if $(file '{{ build.DownloadKey.inputs[0].destination }}' | grep -q 'PGP public key block Public-Key (old)'); then
+                cat '{{ build.DownloadKey.inputs[0].destination }}' | gpg --dearmor > '{{ KeyRing }}/{{ KeyFile }}'
+              else
+                gpg_conversion=$(mktemp)
+                gpg --no-default-keyring --keyring ${gpg_conversion} --import '{{ build.DownloadKey.inputs[0].destination }}'
+                pgp --no-default-keyring --keyring ${gpg_conversion} --export --output '{{ KeyRing }}/{{ KeyFile }}'
+                rm ${gpg_conversion}
+              fi
+      - name: ConfigureSourcesList
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 1
+        inputs:
+          commands:
+            - echo "deb [arch=$(dpkg --print-architecture) signed-by={{ KeyRing }}/{{ KeyFile }}] {{ RepoUrl }} {{ RepoName }} {{ RepoBranch }}" > '/etc/apt/sources.list.d/{{ SourcesListName }}'
+      - name: UpdateRepos
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 1
+        inputs:
+          commands:
+            - apt-get update
+      - name: InstallPackage
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands: 
+            - 'apt-get install -y {{ PackageList }}'
+      - name: InstallMysqlClient
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo apt-get install -y mysql-client
+      - name: ModUbuntuGroups
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands:
+            - sudo usermod -a -G docker ubuntu
