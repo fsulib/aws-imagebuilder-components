@@ -1,0 +1,30 @@
+name: 'Install Amazon ECS Agent'
+description: 'This component installs the ecs-agent.'
+schemaVersion: 1.0
+parameters:
+  - PackageUrl:
+      type: string
+      default: 'https://s3.us-east-1.amazonaws.com/amazon-ecs-agent-us-east-1/amazon-ecs-init-latest.amd64.deb'
+      description: 'Appropriate ECS Agent package.'
+  - PackageFile:
+      type: string
+      default: 'ecs-agent.deb'
+      description: 'Downloaded package filename.'
+phases:
+  - name: build
+    steps:
+      - name: DownloadAgent
+        action: WebDownload
+        onFailure: Abort
+        maxAttempts: 3
+        timeoutSeconds: 10
+        inputs:
+          - source: '{{ PackageUrl }}'
+            destination: '{{ PackageFile }}'
+      - name: InstallAgent
+        action: ExecuteBash
+        onFailure: Abort
+        maxAttempts: 3
+        inputs:
+          commands: 
+            - 'dpkg -i {{ PackageFile }}'
