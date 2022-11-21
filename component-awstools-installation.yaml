@@ -4,23 +4,25 @@ schemaVersion: 1.0
 parameters:
   - CliTools:
       type: string
-      default: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-      description: AWS CLI tools location.
+      default: 'https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip'
+      description: 'AWS CLI tools location.'
   - CfnScripts:
       type: string
-      default: https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz
-      description: CloudFormation helper scripts location.
+      default: 'https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz'
+      description: 'CloudFormation helper scripts location.'
   - CWAgent:
       type: string
-      default: https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb 
-      description: Debian package for CW Agent location.
+      default: 'https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb'
+      description: 'Debian package for CW Agent location.'
   - PipInstaller:
-      type: script
-      default: https://bootstrap.pypa.io/get-pip.py
-      description: Get pip bruh.
+      type: string
+      default: 'https://bootstrap.pypa.io/get-pip.py'
+      description: 'Get pip bruh.'
   - EFSUtils:
       type: string
-      default: https://github.com/aws/efs-utils.git
+      default: 'https://github.com/aws/efs-utils.git'
+      description: 'EFS utils github repo.'
+
 phases:
   - name: build
     steps:
@@ -44,11 +46,11 @@ phases:
         onFailure: Abort
         maxAttempts: 3
         inputs:
-          - source: {{ CliTools }}
+          - source: '{{ CliTools }}'
             destination: /tmp/awscli.zip
-          - source: {{ CWAgent }}
+          - source: '{{ CWAgent }}'
             destination: /tmp/awscwagent.deb
-          - source: {{ PipInstaller }}
+          - source: '{{ PipInstaller }}'
             destination: /tmp/get-pip.py
       - name: CloneEfsUtilsRepo
         action: ExecuteBash
@@ -56,7 +58,7 @@ phases:
         maxAttempts: 3
         inputs:
           commands:
-            - git clone {{ EFSUtils }}
+            - git clone '{{ EFSUtils }}'
       - name: InstallAwsCli
         action: ExecuteBash
         onFailure: Abort
@@ -64,7 +66,7 @@ phases:
         inputs:
           commands:
             - |
-              unzip -qq {{ build.DownloadTools.inputs[0].destination }} -d /tmp
+              unzip -qq '{{ build.DownloadTools.inputs[0].destination }}' -d /tmp
               sudo /tmp/aws/install
       - name: InstallAwsCwAgent
         action: ExecuteBash
@@ -73,7 +75,7 @@ phases:
         inputs:
           commands:
             - |
-              sudo dpkg -i -E {{ build.DownloadTools.inputs[1].destination }}
+              sudo dpkg -i -E '{{ build.DownloadTools.inputs[1].destination }}'
       - name: ModCwAgentGroups
         action: ExecuteBash
         onFailure: Abort
@@ -87,14 +89,14 @@ phases:
         maxAttempts: 3
         inputs:
           commands:
-            - sudo python3 {{ build.DownloadTools.inputs[2].destination }}
+            - sudo python3 '{{ build.DownloadTools.inputs[2].destination }}'
       - name: InstallAwsCfn
         action: ExecuteBash
         onFailure: Abort
         maxAttempts: 3
         inputs:
           commands:
-            - sudo pip3 install --target /opt/aws/bin {{ CfnScripts }} 
+            - sudo pip3 install --target /opt/aws/bin '{{ CfnScripts }}' 
       - name: BuildInstallEfsUtilsDebPkg
         action: ExecuteBash
         onFailure: Abort
