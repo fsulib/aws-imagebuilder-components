@@ -1,6 +1,11 @@
 name: 'Install Drupal9 Dependencies'
 description: "This component installs Drupal9's dependencies, including Composter."
 schemaVersion: 1.0
+parameters:
+  - ComposerVersion:
+      type: string
+      default: 2.1.11
+      description: Appropriate version of Composer to install.
 phases:
   - name: build
     steps:
@@ -41,7 +46,7 @@ phases:
             - |
               cd /root
               php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-              HOME=/root php composer-setup.php --version=2.1.11 --filename=composer --install-dir=/usr/local/bin
+              HOME=/root php composer-setup.php --version={{ ComposerVersion }} --filename=composer --install-dir=/usr/local/bin
               php -r "unlink('composer-setup.php');"
               chmod +x /usr/local/bin/composer
               HOME=/root /usr/local/bin/composer --no-interaction global require zaporylie/composer-drupal-optimizations
