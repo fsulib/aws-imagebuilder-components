@@ -51,5 +51,3 @@ phases:
               chmod +x /usr/local/bin/composer
               HOME=/root /usr/local/bin/composer --no-interaction global require zaporylie/composer-drupal-optimizations
               mkdir -p /root/.config/composer
-              wget -O /root/.config/composer/auth.json https://www.dropbox.com/s/ykrrlf7ysuc6iih/auth2.json > /dev/null
-              
