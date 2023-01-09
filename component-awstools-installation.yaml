@@ -96,7 +96,7 @@ phases:
         maxAttempts: 3
         inputs:
           commands:
-            - sudo pip3 install --target /opt/aws '{{ CfnScripts }}' 
+            - sudo pip3 install '{{ CfnScripts }}' 
       - name: BuildInstallEfsUtilsDebPkg
         action: ExecuteBash
         onFailure: Abort
