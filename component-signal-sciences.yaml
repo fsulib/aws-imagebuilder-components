@@ -16,7 +16,7 @@ parameters:
       description: 'Downloaded key SHA256 checksum.'
   - KeyRing:
       type: string
-      default: '/usr/local/share/keyrings'
+      default: '/etc/apt/keyrings'
       description: 'Local keyring.'
   - RepoUrl:
       type: string
@@ -58,6 +58,8 @@ phases:
             destination: '{{ KeyFile }}'
       - name: CreateKeyingDirectory
         action: CreateFolder
+        onFailure: Ignore
+        maxAttempts: 1
         inputs:
           - path: '{{ KeyRing }}'
             owner: root
