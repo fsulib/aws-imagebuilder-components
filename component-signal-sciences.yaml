@@ -78,7 +78,7 @@ phases:
               else
                 gpg_conversion=$(mktemp)
                 gpg --no-default-keyring --keyring ${gpg_conversion} --import '{{ build.DownloadKey.inputs[0].destination }}'
-                pgp --no-default-keyring --keyring ${gpg_conversion} --export --output '{{ KeyRing }}/{{ KeyFile }}'
+                gpg --no-default-keyring --keyring ${gpg_conversion} --export --output '{{ KeyRing }}/{{ KeyFile }}'
                 rm ${gpg_conversion}
               fi
       - name: ConfigureSourcesList
