@@ -4,11 +4,11 @@ schemaVersion: 1.0
 parameters:
   - MatomoUrl:
       type: string
-      default: 'https://builds.matomo.org/matomo-4.1.1.zip'
+      default: 'https://builds.matomo.org/matomo-4.14.2.zip'
       description: 'Source of Matomo application archive.'
   - MatomoChecksum:
       type: string
-      default: 'ef9642d4ae91176ddb577f02e0b6488f565f1b8591d88f1c24ae16e230bdaa93'
+      default: 'ec317f55da5fd664306f1a742240260464b8ce25b5f9eace0145d8f006cd4b99'
       description: 'Matomo archive SHA256 checksum.'
   - MatomoArchive:
       type: string
@@ -35,6 +35,7 @@ phases:
                 php7.4-mysql \
                 php7.4-xml \
                 php7.4-mbstring \
+                php-apcu \
                 unzip \
                 zip
       - name: DownloadMatomoArchive
