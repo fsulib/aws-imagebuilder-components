@@ -4,11 +4,11 @@ schemaVersion: 1.0
 parameters:
   - MatomoUrl:
       type: string
-      default: 'http://builds.matomo.org/matomo-4.15.0.zip'
+      default: 'http://builds.matomo.org/matomo-4.15.1.zip'
       description: 'Source of Matomo application archive.'
   - MatomoChecksum:
       type: string
-      default: 'cfe37bb8f11f9ae570b6b528de763c1160025b9bc2a2e1773d47ebe7a24cd2b5'
+      default: '33389e1286938a8435e11d025efe5fb2f94774b7d9a39df34e36bfd01664a156'
       description: 'Matomo archive SHA256 checksum.'
   - MatomoArchive:
       type: string
